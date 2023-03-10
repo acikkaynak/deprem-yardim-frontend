@@ -1,4 +1,4 @@
-import { ChannelData, MarkerVisited } from "@/types";
+import { MarkerVisited } from "@/types";
 import { useMapActions } from "@/stores/mapStore";
 import { useCallback, MouseEvent, KeyboardEvent } from "react";
 import { LeafletMouseEvent } from "leaflet";
@@ -6,6 +6,7 @@ import { LeafletMouseEvent } from "leaflet";
 import * as localForage from "localforage";
 import { localForageKeys } from "@/components/Map/utils";
 import { useAreasActions } from "@/stores/areasStore";
+import { ChannelData } from "@/services/parseChannelData";
 
 export function useMapClickHandlers() {
   const { toggleDrawer, setDrawerData, setPopUpData } = useMapActions();

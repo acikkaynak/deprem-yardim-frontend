@@ -1,7 +1,6 @@
 import styles from "./Drawer.module.css";
 import { default as MuiDrawer } from "@mui/material/Drawer";
 import { DrawerData } from "../../stores/mapStore";
-import { ChannelData } from "@/types";
 import { BabalaDataProperties } from "@/services/responses/babala";
 import { TwitterDataProperties } from "@/services/responses/twitter";
 import Button from "@mui/material/Button";
@@ -21,6 +20,7 @@ import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import RoomIcon from "@mui/icons-material/Room";
 import omit from "lodash.omit";
 import Link from "next/link";
+import { ChannelData } from "@/services/parseChannelData";
 
 const DrawerIDLabel = ({ id }: { id: number }) => {
   return <span className={styles.contentIdSection}>ID: {id}</span>;

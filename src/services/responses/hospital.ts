@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type HospitalAPIExtraParams = {
   name: string;
@@ -7,11 +8,6 @@ export type HospitalAPIExtraParams = {
   ilce: string;
   kurum: string;
 };
-
-export type HospitalResponse = APIResponseObject<
-  "hastahane_locations",
-  HospitalAPIExtraParams
->;
 
 export type HospitalDataProperties = {
   name: string | null;
@@ -24,20 +20,35 @@ export type HospitalData = {
   channel: "hastane";
   properties: HospitalDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
 
-export const transformHospitalResponse: RT<HospitalResponse, HospitalData> = (
-  res
-) => {
+type HospitalChannelProp = APIGenericChannelProp<"hastahane_locations">;
+
+export function parseHospitalResponse(
+  item: APIResponseBody & HospitalChannelProp
+): HospitalData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: HospitalAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<HospitalAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+
+  // Transform into client data
   return {
     channel: "hastane",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      name: res.extraParams?.name ?? null,
+      name: parsedExtraParams?.name ?? null,
       icon: "images/icon-10.png",
-      city: res.extraParams?.il ?? null,
+      city: parsedExtraParams?.il ?? null,
       description: null,
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

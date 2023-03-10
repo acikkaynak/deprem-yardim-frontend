@@ -1,7 +1,6 @@
-import { parseChannelData } from "@/hooks/useLocation";
-import { transformers } from "@/hooks/useVerifiedLocations";
-import { APIChannel, APIResponse, ChannelData } from "@/types";
+import { APIChannel, APIResponse, apiChannels } from "@/types";
 import { dataFetcher } from "./dataFetcher";
+import { ChannelData, parseChannelData } from "./parseChannelData";
 
 export type Bounds = {
   ne_lat: string;
@@ -50,10 +49,8 @@ export class ApiClient {
 
     const data = (response.results ?? [])
       .map((item) => {
-        const transformResponse = transformers[item.channel] ?? null;
-        // @ts-ignore
-        if (transformResponse) {
-          return parseChannelData(item, { transformResponse });
+        if (apiChannels.includes(item.channel)) {
+          return parseChannelData(item);
         }
       })
       .filter(Boolean) as ChannelData[];
@@ -74,11 +71,8 @@ export class ApiClient {
     const response = await dataFetcher<APIResponse>(`${this.url}/feeds/${id}`);
 
     let channel: ChannelData | undefined = undefined;
-    if (response.channel) {
-      channel = parseChannelData(response, {
-        transformResponse:
-          transformers[response.channel.toLowerCase() as APIChannel],
-      });
+    if (apiChannels.includes(response.channel)) {
+      channel = parseChannelData(response);
     }
 
     return { channel: channel ?? null, _raw: response ?? null };

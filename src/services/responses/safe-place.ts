@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type SafePlaceAPIExtraParams = {
   name: string;
@@ -7,11 +8,6 @@ export type SafePlaceAPIExtraParams = {
   styleUrl: string;
   icon: string;
 };
-
-export type SafePlaceResponse = APIResponseObject<
-  "guvenli_yerler_oteller",
-  SafePlaceAPIExtraParams
->;
 
 export type SafePlaceDataProperties = {
   reason: string | null;
@@ -25,22 +21,36 @@ export type SafePlaceData = {
   channel: "guvenli";
   properties: SafePlaceDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
 
-export const transformSafePlaceResponse: RT<
-  SafePlaceResponse,
-  SafePlaceData
-> = (res) => {
+type SafePlaceChannelProp = APIGenericChannelProp<"guvenli_yerler_oteller">;
+
+export function parseSafePlaceResponse(
+  item: APIResponseBody & SafePlaceChannelProp
+): SafePlaceData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: SafePlaceAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<SafePlaceAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+
+  // Transform into client data
   return {
     channel: "guvenli",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      description: res.extraParams?.description ?? null,
+      description: parsedExtraParams?.description ?? null,
       icon: "images/icon-16.png",
-      reason: res.reason ?? null,
-      name: res.extraParams?.name ?? null,
-      verified: res.is_location_verified ?? false,
+      reason: item.reason ?? null,
+      name: parsedExtraParams?.name ?? null,
+      verified: item.is_location_verified ?? false,
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

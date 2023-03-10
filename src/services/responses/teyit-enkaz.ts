@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type TeyitEnkazAPIExtraParams = {
   name: string;
@@ -7,11 +8,6 @@ export type TeyitEnkazAPIExtraParams = {
   icon: string;
   description?: string;
 };
-
-export type TeyitEnkazResponse = APIResponseObject<
-  "teyit_enkaz",
-  TeyitEnkazAPIExtraParams
->;
 
 export type TeyitEnkazDataProperties = {
   name: string | null;
@@ -24,21 +20,35 @@ export type TeyitEnkazData = {
   channel: "teyit_enkaz";
   properties: TeyitEnkazDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
 
-export const transformTeyitEnkazResponse: RT<
-  TeyitEnkazResponse,
-  TeyitEnkazData
-> = (res) => {
+type TeyitEnkazChannelProp = APIGenericChannelProp<"teyit_enkaz">;
+
+export function parseTeyitEnkazResponse(
+  item: APIResponseBody & TeyitEnkazChannelProp
+): TeyitEnkazData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: TeyitEnkazAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<TeyitEnkazAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+
+  // Transform into client data
   return {
     channel: "teyit_enkaz",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      name: res.extraParams?.name ?? null,
-      description: res.extraParams?.description ?? null,
-      type: res.extraParams?.styleUrl ?? null,
+      name: parsedExtraParams?.name ?? null,
+      description: parsedExtraParams?.description ?? null,
+      type: parsedExtraParams?.styleUrl ?? null,
       icon: "images/icon-enkaz.png",
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

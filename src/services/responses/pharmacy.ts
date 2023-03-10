@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type PharmacyAPIExtraParams = {
   name: string;
@@ -7,11 +8,6 @@ export type PharmacyAPIExtraParams = {
   styleUrl: string;
   icon: string;
 };
-
-export type PharmacyResponse = APIResponseObject<
-  "eczane_excel" | "turk_eczane",
-  PharmacyAPIExtraParams
->;
 
 export type PharmacyDataProperties = {
   name: string | null;
@@ -25,21 +21,38 @@ export type PharmacyData = {
   channel: "eczane";
   properties: PharmacyDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
 
-export const transformPharmacyResponse: RT<PharmacyResponse, PharmacyData> = (
-  res
-) => {
+type PharmacyChannelProp =
+  | APIGenericChannelProp<"eczane_excel">
+  | APIGenericChannelProp<"turk_eczane">;
+
+export function parsePharmacyResponse(
+  item: APIResponseBody & PharmacyChannelProp
+): PharmacyData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: PharmacyAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<PharmacyAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+
+  // Transform into client data
   return {
     channel: "eczane",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      name: res.extraParams?.name ?? null,
-      reason: res.reason ?? null,
+      name: parsedExtraParams?.name ?? null,
+      reason: item.reason ?? null,
       icon: "images/icon-15.png",
-      verified: res.is_location_verified ?? false,
+      verified: item.is_location_verified ?? false,
       description: null,
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

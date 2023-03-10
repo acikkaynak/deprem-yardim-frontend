@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 
-import {
-  ClusterPopupData,
-  DeviceType,
-  EVENT_TYPES,
-  ChannelData,
-} from "@/types";
+import { ChannelData } from "@/services/parseChannelData";
+import { DeviceType, EVENT_TYPES } from "@/types";
+
 import { create } from "zustand";
 
+export type ClusterPopupData = {
+  count: number;
+  baseMarker: ChannelData;
+  markers: any[];
+};
 export enum MapType {
   Terrain = "p",
   Satellite = "y",

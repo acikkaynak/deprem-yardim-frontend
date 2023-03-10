@@ -2,9 +2,9 @@ import L from "leaflet";
 import { Marker, useMap } from "react-leaflet";
 import useSupercluster from "use-supercluster";
 import { findTagByClusterCount } from "../../Tag/Tag.types";
-import { ChannelData } from "@/types";
 import { useVisitedMarkersStore } from "@/stores/visitedMarkersStore";
 import styles from "./MapMarker.module.css";
+import { ChannelData } from "@/services/parseChannelData";
 
 const fetchIcon = (count: number) => {
   const tag = findTagByClusterCount(count);

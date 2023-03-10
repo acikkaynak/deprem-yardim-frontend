@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type SatelliteAPIExtraParams = {
   damage: string;
@@ -9,11 +10,6 @@ export type SatelliteAPIExtraParams = {
   shape_long: string;
   shape_area: string;
 };
-
-export type SatelliteResponse = APIResponseObject<
-  "uydu",
-  SatelliteAPIExtraParams
->;
 
 export type SatelliteDataProperties = {
   damage: string | null;
@@ -27,22 +23,35 @@ export type SatelliteData = {
   channel: "uydu";
   properties: SatelliteDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
+type SatelliteChannelProp = APIGenericChannelProp<"uydu">;
 
-export const transformSatelliteResponse: RT<
-  SatelliteResponse,
-  SatelliteData
-> = (res) => {
+export function parseSatelliteResponse(
+  item: APIResponseBody & SatelliteChannelProp
+): SatelliteData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: SatelliteAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<SatelliteAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+
+  // Transform into client data
   return {
     channel: "uydu",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      damage: res.extraParams?.damage ?? null,
-      verified: res.is_location_verified ?? false,
+      damage: parsedExtraParams?.damage ?? null,
+      verified: item.is_location_verified ?? false,
       icon: "images/icon-13.png",
       name: null,
       description: null,
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

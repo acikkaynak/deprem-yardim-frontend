@@ -3,10 +3,11 @@ import { Box, SxProps, Theme } from "@mui/material";
 import { HelpViewComponent } from "@/components/UserGuide/UserGuide";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { ApiClient } from "@/services/ApiClient";
-import { APIResponse, ChannelData } from "@/types";
+import { APIResponse } from "@/types";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { HeadWithMeta } from "@/components/HeadWithMeta/HeadWithMeta";
 import { BASE_URL } from "@/utils/constants";
+import { ChannelData } from "@/services/parseChannelData";
 
 const MapContent = dynamic(
   () => import("@/components/Map/Content").then((mod) => mod.MapContent),

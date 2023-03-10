@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type AhbapAPIExtraParams = {
   name: string;
@@ -7,10 +8,6 @@ export type AhbapAPIExtraParams = {
   icon: string;
   description?: string;
 };
-export type AhbapResponse = APIResponseObject<
-  "ahbap_location",
-  AhbapAPIExtraParams
->;
 
 export type AhbapDataProperties = {
   name: string | null;
@@ -23,18 +20,33 @@ export type AhbapData = {
   channel: "ahbap";
   properties: AhbapDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
+type AhbapChannelProp = APIGenericChannelProp<"ahbap_location">;
 
-export const transformAhbapResponse: RT<AhbapResponse, AhbapData> = (res) => {
+export function parseAhbapResponse(
+  item: APIResponseBody & AhbapChannelProp
+): AhbapData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: AhbapAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<AhbapAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+  // Transform into client data
   return {
     channel: "ahbap",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      name: res.extraParams?.name ?? null,
-      description: res.extraParams?.description ?? null,
-      type: res.extraParams?.styleUrl ?? null,
+      name: parsedExtraParams?.name ?? null,
+      description: parsedExtraParams?.description ?? null,
+      type: parsedExtraParams?.styleUrl ?? null,
       icon: "images/icon-ahbap.png",
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

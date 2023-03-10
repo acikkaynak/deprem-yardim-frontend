@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type BabalaAPIExtraParams = {
   additional_notes: string;
@@ -13,8 +14,6 @@ export type BabalaAPIExtraParams = {
   telefon: string;
 };
 
-export type BabalaResponse = APIResponseObject<"babala", BabalaAPIExtraParams>;
-
 export type BabalaDataProperties = {
   full_text: string;
   reason: string | null;
@@ -22,29 +21,45 @@ export type BabalaDataProperties = {
   formatted_address: string;
   name: string | null;
   description: string | null;
+  icon: string | null;
 };
 
 export type BabalaData = {
   channel: "babala";
   properties: BabalaDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
+type BabalaChannelProp =
+  | APIGenericChannelProp<"babala">
+  | APIGenericChannelProp<"Babala">;
 
-export const transformBabalaResponse: RT<BabalaResponse, BabalaData> = (
-  res
-) => {
+export function parseBabalaResponse(
+  item: APIResponseBody & BabalaChannelProp
+): BabalaData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: BabalaAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<BabalaAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+  // Transform into client data
   return {
     channel: "babala",
     properties: {
-      reason: res.reason ?? null,
-      full_text: res.full_text ?? "",
-      timestamp: res.timestamp ?? null,
-      formatted_address: res.formatted_address,
-      name: res.extraParams?.name ?? null,
+      reason: item.reason ?? null,
+      full_text: item.full_text ?? "",
+      timestamp: item.timestamp ?? null,
+      formatted_address: item.formatted_address,
+      name: parsedExtraParams?.name ?? null,
       description: null,
       icon: "images/icon-babala.png",
     },
-    geometry: createGeometry(res),
-    reference: res.entry_id ?? null,
+    geometry: createGeometry(item),
+    reference: item.entry_id ?? null,
   };
-};
+}

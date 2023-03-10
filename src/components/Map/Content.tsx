@@ -9,7 +9,6 @@ import { Map } from "@/components/Map/Map";
 import { MapControls } from "./Controls/index";
 import { TileLayer } from "react-leaflet";
 import { Box } from "@mui/material";
-import { ChannelData } from "@/types";
 import { useRouter } from "next/router";
 import { useMapEvents } from "@/hooks/useMapEvents";
 import { MapClusterStyle } from "@/components/Map/Cluster/ClusterStyle";
@@ -21,6 +20,7 @@ import {
 } from "@/features/location-categories";
 import { LayerControl } from "./LayerControl";
 import { useMapGeographyStore } from "@/stores/mapGeographyStore";
+import { ChannelData } from "@/services/parseChannelData";
 
 const MapEvents = () => {
   useMapEvents();

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { PartialDataError } from "@/errors";
-import { ChannelData } from "@/types";
+import { ChannelData } from "@/services/parseChannelData";
 
 interface MapState {
   shouldFetchNextOption: boolean;

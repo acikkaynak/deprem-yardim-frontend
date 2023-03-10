@@ -1,5 +1,6 @@
 import { createGeometry } from "@/utils/geometry";
-import { APIResponseObject, RT, Geometry } from "@/types";
+import { Geometry, APIResponseBody, APIGenericChannelProp } from "@/types";
+import { parseExtraParams } from "@/services/parseExtraParams";
 
 export type TeyitYardimAPIExtraParams = {
   name: string;
@@ -7,11 +8,6 @@ export type TeyitYardimAPIExtraParams = {
   icon: string;
   description?: string;
 };
-
-export type TeyitYardimResponse = APIResponseObject<
-  "teyit_yardim",
-  TeyitYardimAPIExtraParams
->;
 
 export type TeyitYardimDataProperties = {
   name: string | null;
@@ -24,20 +20,35 @@ export type TeyitYardimData = {
   channel: "teyit_yardim";
   properties: TeyitYardimDataProperties;
   geometry: Geometry;
+  reference?: number | null;
+  closeByRecords?: number[];
+  isVisited?: boolean;
 };
-export const transformTeyitYardimResponse: RT<
-  TeyitYardimResponse,
-  TeyitYardimData
-> = (res) => {
+
+type TeyitYardimChannelProp = APIGenericChannelProp<"teyit_yardim">;
+
+export function parseTeyitYardimResponse(
+  item: APIResponseBody & TeyitYardimChannelProp
+): TeyitYardimData {
+  // APIResponse -> APIResponseObject
+  // i.e. parse extra params
+  let parsedExtraParams: TeyitYardimAPIExtraParams | undefined = undefined;
+  if (item.extra_parameters) {
+    parsedExtraParams = parseExtraParams<TeyitYardimAPIExtraParams>(
+      item.extra_parameters
+    );
+  }
+
+  // Transform into client data
   return {
     channel: "teyit_yardim",
-    geometry: createGeometry(res),
+    geometry: createGeometry(item),
     properties: {
-      name: res.extraParams?.name ?? null,
-      description: res.extraParams?.description ?? null,
-      type: res.extraParams?.styleUrl ?? null,
+      name: parsedExtraParams?.name ?? null,
+      description: parsedExtraParams?.description ?? null,
+      type: parsedExtraParams?.styleUrl ?? null,
       icon: "images/icon-yardim.png",
     },
-    reference: res.entry_id ?? null,
+    reference: item.entry_id ?? null,
   };
-};
+}

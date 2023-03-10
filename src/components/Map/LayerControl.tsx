@@ -2,9 +2,9 @@ import { HeatmapLayerFactory } from "@vgrid/react-leaflet-heatmap-layer";
 import { GenericClusterGroup } from "@/components/Map/Cluster/GenericClusterGroup";
 import { MapLayer } from "../MTMLView/types";
 import { memo, useMemo } from "react";
-import { ChannelData } from "@/types";
 import { useMTMLView } from "../MTMLView/MTMLView";
 import { DEFAULT_IMPORTANCY } from "./utils";
+import { ChannelData } from "@/services/parseChannelData";
 
 const HeatmapLayer = memo(HeatmapLayerFactory<Point>());
 

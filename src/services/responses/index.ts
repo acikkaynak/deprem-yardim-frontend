@@ -1,30 +1,16 @@
-import { transformFoodResponse, FoodData } from "./food";
-import { transformBabalaResponse, BabalaData } from "./babala";
-import { transformAhbapResponse, AhbapData } from "./ahbap";
-import { transformHospitalResponse, HospitalData } from "./hospital";
-import { transformTeleteyitResponse, TeleteyitData } from "./teleteyit";
-import { transformSatelliteResponse, SatelliteData } from "./satellite";
-import { transformPharmacyResponse, PharmacyData } from "./pharmacy";
-import { transformSafePlaceResponse, SafePlaceData } from "./safe-place";
-import { transformTwitterResponse, TwitterData } from "./twitter";
-import { transformTeyitEnkazResponse, TeyitEnkazData } from "./teyit-enkaz";
-import { transformTeyitYardimResponse, TeyitYardimData } from "./teyit-yardim";
-import { transformDepremIOResponse, DepremIOData } from "./depremio";
+import { AhbapData, parseAhbapResponse } from "./ahbap";
+import { BabalaData, parseBabalaResponse } from "./babala";
+import { DepremIOData, parseDepremIOResponse } from "./depremio";
+import { FoodData, parseFoodResponse } from "./food";
+import { HospitalData, parseHospitalResponse } from "./hospital";
+import { PharmacyData, parsePharmacyResponse } from "./pharmacy";
+import { SafePlaceData, parseSafePlaceResponse } from "./safe-place";
+import { SatelliteData, parseSatelliteResponse } from "./satellite";
+import { TeleteyitData, parseTeleteyitResponse } from "./teleteyit";
+import { TeyitEnkazData, parseTeyitEnkazResponse } from "./teyit-enkaz";
+import { TeyitYardimData, parseTeyitYardimResponse } from "./teyit-yardim";
+import { TwitterData, parseTwitterResponse } from "./twitter";
 
-export {
-  transformFoodResponse,
-  transformBabalaResponse,
-  transformAhbapResponse,
-  transformHospitalResponse,
-  transformTeleteyitResponse,
-  transformSatelliteResponse,
-  transformPharmacyResponse,
-  transformSafePlaceResponse,
-  transformTwitterResponse,
-  transformTeyitEnkazResponse,
-  transformTeyitYardimResponse,
-  transformDepremIOResponse,
-};
 export type {
   FoodData,
   BabalaData,
@@ -38,4 +24,18 @@ export type {
   TeyitEnkazData,
   TeyitYardimData,
   DepremIOData,
+};
+export {
+  parseAhbapResponse,
+  parseBabalaResponse,
+  parseDepremIOResponse,
+  parseFoodResponse,
+  parseHospitalResponse,
+  parsePharmacyResponse,
+  parseSafePlaceResponse,
+  parseSatelliteResponse,
+  parseTeleteyitResponse,
+  parseTeyitEnkazResponse,
+  parseTeyitYardimResponse,
+  parseTwitterResponse,
 };

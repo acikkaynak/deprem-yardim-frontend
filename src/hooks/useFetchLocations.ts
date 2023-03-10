@@ -1,4 +1,3 @@
-import { ChannelData } from "@/types";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { isValidReasons } from "@/utils/isValidReasons";
@@ -6,6 +5,7 @@ import { useSingletonsStore } from "@/stores/singletonsStore";
 import useSWR from "swr";
 import { useDebounce } from "use-debounce";
 import { useLoading } from "@/stores/loadingStore";
+import { ChannelData } from "@/services/parseChannelData";
 
 const REQUEST_DEBOUNCE_TIME = 500; //ms
 

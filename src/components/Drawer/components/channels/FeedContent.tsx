@@ -3,7 +3,6 @@ import { FeedChannelBabala } from "./babala/FeedChannelBabala";
 import { FeedChannelGeneric } from "./FeedChannelGeneric";
 import { FeedChannelTeleteyit } from "./FeedChannelTeleteyit";
 import { FeedChannelPharmacy } from "./FeedChannelPharmacy";
-import { ClientChannel, ChannelData } from "@/types";
 import { FeedChannelAhbap } from "./twitter/FeedChannelAhbap";
 import { FeedChannelSafePlaces } from "@/components/Drawer/components/channels/FeedChannelSafePlaces";
 import { DrawerData } from "@/stores/mapStore";
@@ -15,6 +14,7 @@ import {
   FeedChannelSafePlacesProps,
   FeedChannelPharmacyProps,
 } from "../../types";
+import { ChannelData, ClientChannel } from "@/services/parseChannelData";
 
 type Props = {
   content: DrawerData;

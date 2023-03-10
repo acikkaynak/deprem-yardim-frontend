@@ -1,8 +1,8 @@
 import Typography from "@mui/material/Typography";
 import { Chip, Divider } from "@mui/material";
-import { ChannelData } from "@/types";
 import { useTranslation } from "next-i18next";
 import { Stack } from "@mui/system";
+import { ChannelData } from "@/services/parseChannelData";
 
 export const FeedChannelGeneric = ({ channel, properties }: ChannelData) => {
   const { icon, reason } = properties as {
